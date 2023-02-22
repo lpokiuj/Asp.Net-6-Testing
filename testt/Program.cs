@@ -2,9 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using testt.Data;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddEntityFrameworkNpgsql().AddDbContext<ApiDbContext>(opt =>
-        opt.UseNpgsql(builder.Configuration.GetConnectionString("SampleDbConnection")));
-
 /*builder.Services.AddDbContext<DataContext>();*/
 // Add services to the container.
 

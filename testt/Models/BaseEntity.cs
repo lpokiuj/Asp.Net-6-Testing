@@ -2,7 +2,7 @@
 {
     public abstract class BaseEntity
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public int Id { get; set; }
         public DateTime AddedDate { get; set; } = DateTime.UtcNow;
         public string AddedBy { get; set; } = "";
         public DateTime UpdatedDate { get; set; } = DateTime.UtcNow;
