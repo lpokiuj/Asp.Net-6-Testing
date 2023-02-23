@@ -1,8 +1,5 @@
-using Microsoft.EntityFrameworkCore;
-using testt.Data;
-
 var builder = WebApplication.CreateBuilder(args);
-/*builder.Services.AddDbContext<DataContext>();*/
+builder.Services.AddControllers().AddNewtonsoftJson();
 // Add services to the container.
 
 builder.Services.AddControllers();
