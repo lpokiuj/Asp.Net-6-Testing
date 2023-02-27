@@ -12,43 +12,82 @@ namespace testt.Controllers
     [Route("promo")]
     public class PromoController : Controller
     {
-        private readonly IConfiguration _configuration;
         private readonly PromoManager _promoManager;
 
-        public PromoController(IConfiguration configuration)
+        public PromoController()
         {
-            this._configuration = configuration;
-            this._promoManager = new PromoManager(this._configuration); ;
+            this._promoManager = new PromoManager();
         }
         [HttpGet]
-        public JObject Index()
+        public JsonResult Index()
         {
-            return this._promoManager.Index();
+            var returnMsg = this._promoManager.Index();
+            var jsonResult = new JsonResult(returnMsg);
+            jsonResult.StatusCode = Convert.ToInt32(returnMsg["status"]);
+
+            return jsonResult;
+        }
+
+
+        [HttpGet("write_to_csv")]
+        public JsonResult WriteToCsvFile()
+        {
+            var returnMsg = this._promoManager.WriteToCsvFile();
+            var jsonResult = new JsonResult(returnMsg);
+            jsonResult.StatusCode = Convert.ToInt32(returnMsg["status"]);
+
+            return jsonResult;
+        }
+
+        [HttpGet("read_from_csv")]
+        public JsonResult ReadFromCsvFile()
+        {
+            var returnMsg = this._promoManager.ReadFromCsvFile();
+            var jsonResult = new JsonResult(returnMsg);
+            jsonResult.StatusCode = Convert.ToInt32(returnMsg["status"]);
+
+            return jsonResult;
         }
 
         [HttpGet("{id}")]
-        public JObject FindById(int id)
+        public JsonResult FindById(int id)
         {
-            return this._promoManager.FindById(id);
+            var returnMsg = this._promoManager.FindById(id);
+            var jsonResult = new JsonResult(returnMsg);
+            jsonResult.StatusCode = Convert.ToInt32(returnMsg["status"]);
+
+            return jsonResult;
         }
 
         [HttpPost]
-        public JObject Insert([FromBody] JObject data)
+        public JsonResult Insert([FromBody] JObject data)
         {
-            return this._promoManager.Insert(data);
+            var returnMsg = this._promoManager.Insert(data);
+            var jsonResult = new JsonResult(returnMsg);
+            jsonResult.StatusCode = Convert.ToInt32(returnMsg["status"]);
+
+            return jsonResult;
         }
 
         [HttpPut("{id}")]
-        public JObject Update([FromBody] JObject data, int id)
+        public JsonResult Update([FromBody] JObject data, int id)
         {
-            return this._promoManager.Update(data, id);
+            var returnMsg = this._promoManager.Update(data, id);
+            var jsonResult = new JsonResult(returnMsg);
+            jsonResult.StatusCode = Convert.ToInt32(returnMsg["status"]);
+
+            return jsonResult;
 
         }
 
         [HttpDelete("{id}")]
-        public JObject Delete(int id)
+        public JsonResult Delete(int id)
         {
-            return this._promoManager.Delete(id);
+            var returnMsg = this._promoManager.Delete(id);
+            var jsonResult = new JsonResult(returnMsg);
+            jsonResult.StatusCode = Convert.ToInt32(returnMsg["status"]);
+
+            return jsonResult;
         }
 
 

@@ -1,44 +1,69 @@
-﻿using Microsoft.VisualBasic;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using testt.DBProcesses;
-using testt.Models;
 
 namespace testt.Managers
 {
     public class PromoManager
     {
-        private readonly PromoDbProcess _promoDbProcess;
-        public PromoManager(IConfiguration configuration) { 
-            _promoDbProcess = new PromoDbProcess(configuration);
+        private readonly PromoRepository _promoRepository;
+
+        public PromoManager() {
+            _promoRepository = new PromoRepository();
         }
+
         public JObject Index()
         {
             var returnMsg = new JObject();
 
-            var promos = new JArray();
-            promos = this._promoDbProcess.Index();
+            var promos = this._promoRepository.Index();
 
-            if (promos == null)
+            returnMsg["status"] = 200;
+            returnMsg["message"] = "Data retrieved successfully";
+            returnMsg["data"] = promos;
+            
+
+            return returnMsg;
+        }
+
+        public JObject WriteToCsvFile()
+        {
+            var returnMsg = new JObject();
+            bool write = this._promoRepository.WriteToCsvFile(out string message);
+
+            if (write)
             {
                 returnMsg["status"] = 200;
-                returnMsg["message"] = "No Data Available";
+                returnMsg["message"] = message;
                 returnMsg["data"] = null;
             }
             else
             {
-                returnMsg["status"] = 200;
-                returnMsg["message"] = "Data retrieved successfully";
-                returnMsg["data"] = promos;
+                returnMsg["status"] = 400;
+                returnMsg["message"] = message;
+                returnMsg["data"] = null;
             }
 
             return returnMsg;
+        }
+
+        public JObject ReadFromCsvFile()
+        {
+            var returnMsg = new JObject();
+            var promos = this._promoRepository.ReadFromCsvFile();
+
+            returnMsg["status"] = 200;
+            returnMsg["message"] = "Data retrieved successfully";
+            returnMsg["data"] = promos;
+
+            return returnMsg;
+
         }
 
         public JObject FindById(int id)
         {
             var returnMsg = new JObject();
 
-            var promo = this._promoDbProcess.FindById(id);
+            var promo = this._promoRepository.FindById(id);
 
             if(promo == null)
             {
@@ -60,7 +85,7 @@ namespace testt.Managers
         {
             var returnMsg = new JObject();
 
-            bool insert = this._promoDbProcess.Insert(data);
+            bool insert = this._promoRepository.Insert(data);
 
             if (insert)
             {
@@ -82,7 +107,7 @@ namespace testt.Managers
         {
             var returnMsg = new JObject();
 
-            bool insert = this._promoDbProcess.Update(data, id);
+            bool insert = this._promoRepository.Update(data, id);
 
             if (insert)
             {
@@ -104,18 +129,18 @@ namespace testt.Managers
         {
             var returnMsg = new JObject();
 
-            bool insert = this._promoDbProcess.Delete(id);
+            bool insert = this._promoRepository.Delete(id, out string message);
 
             if (insert)
             {
                 returnMsg["status"] = 200;
-                returnMsg["message"] = "Data Deleted";
+                returnMsg["message"] = message;
                 returnMsg["data"] = null;
             }
             else
             {
                 returnMsg["status"] = 404;
-                returnMsg["message"] = "Data not found";
+                returnMsg["message"] = message;
                 returnMsg["data"] = null;
             }
 
