@@ -36,9 +36,10 @@ namespace testt.Controllers
         }
 
         [HttpPost]
-        public JsonResult Insert([FromBody] JObject data)
+        public JsonResult Insert([FromForm] string p_trx_no, [FromForm] string p_trx_product_name,
+            [FromForm] string p_trx_promo_code, [FromForm] int p_trx_amount)
         {
-            var returnMsg = this._transactionManager.Insert(data);
+            var returnMsg = this._transactionManager.Insert(p_trx_no, p_trx_product_name, p_trx_promo_code, p_trx_amount);
             var jsonResult = new JsonResult(returnMsg);
             jsonResult.StatusCode = Convert.ToInt32(returnMsg["status"]);
 
@@ -46,9 +47,9 @@ namespace testt.Controllers
         }
 
         [HttpPut]
-        public JsonResult Update([FromBody] JObject data)
+        public JsonResult Update([FromForm] string p_trx_no, [FromForm] string p_trx_promo_code)
         {
-            var returnMsg = this._transactionManager.Update(data);
+            var returnMsg = this._transactionManager.Update(p_trx_no, p_trx_promo_code);
             var jsonResult = new JsonResult(returnMsg);
             jsonResult.StatusCode = Convert.ToInt32(returnMsg["status"]);
 

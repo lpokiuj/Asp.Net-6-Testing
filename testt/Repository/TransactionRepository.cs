@@ -114,11 +114,11 @@ namespace testt.Repository
                 cmd.CommandType = CommandType.StoredProcedure;
 
                 cmd.Parameters.AddWithValue("p_trx_no", data["p_trx_no"].ToString());
-                if (!data["p_trx_promo_code"].IsNullOrEmpty())
+                if (data.ContainsKey("p_trx_promo_code") && !string.IsNullOrWhiteSpace(data["p_trx_promo_code"].ToString()))
                 {
                     cmd.Parameters.AddWithValue("p_trx_promo_code", data["p_trx_promo_code"].ToString());
                 }
-                
+
                 con.Open();
                 returnValue = cmd.ExecuteNonQuery() <= 0 ? false : true;
                 con.Close();

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using testt.DBProcesses;
 
 namespace testt.Managers
@@ -89,10 +90,20 @@ namespace testt.Managers
             return returnMsg;
         }
 
-        public JObject Insert(JObject data)
+        public JObject Insert(string p_prm_code, string p_prm_name, string p_prm_description,
+            string p_prm_start, string p_prm_end, int p_prm_percentage, string p_added_by, string p_updated_by)
         {
             var returnMsg = new JObject();
 
+            var data = new JObject();
+            data["p_prm_code"] = p_prm_code;
+            data["p_prm_name"] = p_prm_name;
+            data["p_prm_description"] = p_prm_description;
+            data["p_prm_start"] = p_prm_start;
+            data["p_prm_end"] = p_prm_end;
+            data["p_prm_percentage"] = p_prm_percentage;
+            data["p_added_by"] = p_added_by;
+            data["p_updated_by"] = p_updated_by;
             bool insert = this._promoRepository.Insert(data);
 
             if (insert)
@@ -111,10 +122,14 @@ namespace testt.Managers
             return returnMsg;
         }
 
-        public JObject Update(JObject data, int id)
+        public JObject Update(string p_prm_code, string p_prm_name, string p_prm_description, int id)
         {
             var returnMsg = new JObject();
 
+            var data = new JObject();
+            data["p_prm_code"] = p_prm_code;
+            data["p_prm_name"] = p_prm_name;
+            data["p_prm_description"] = p_prm_description;
             bool insert = this._promoRepository.Update(data, id);
 
             if (insert)

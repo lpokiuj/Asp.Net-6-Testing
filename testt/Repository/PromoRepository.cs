@@ -190,10 +190,13 @@ namespace testt.DBProcesses
             cmd.Connection = con;
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("p_prm_id", id);
-            foreach (JProperty _data in data.Properties())
+            /*foreach (JProperty _data in data.Properties())
             {
                 cmd.Parameters.AddWithValue(_data.Name, _data.Value);
-            }
+            }*/
+            cmd.Parameters.AddWithValue("p_prm_code", data["p_prm_code"].ToString());
+            cmd.Parameters.AddWithValue("p_prm_name", data["p_prm_name"].ToString());
+            cmd.Parameters.AddWithValue("p_prm_description", data["p_prm_description"].ToString());
             con.Open();
             cmd.ExecuteNonQuery();
             con.Close();

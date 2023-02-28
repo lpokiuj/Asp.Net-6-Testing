@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using testt.Repository;
 
 namespace testt.Managers
@@ -38,9 +39,16 @@ namespace testt.Managers
             return returnMsg;
         }
 
-        public JObject Insert(JObject data)
+        public JObject Insert(string p_trx_no, string p_trx_product_name,
+            string p_trx_promo_code, int p_trx_amount)
         {
             var returnMsg = new JObject();
+
+            var data = new JObject();
+            data["p_trx_no"] = p_trx_no;
+            data["p_trx_product_name"] = p_trx_product_name;
+            data["p_trx_promo_code"] = p_trx_promo_code;
+            data["p_trx_amount"] = p_trx_amount;
             bool insert = this._transactionRepository.Insert(data, out string message);
             
             returnMsg["status"] = 200;
@@ -50,9 +58,13 @@ namespace testt.Managers
             return returnMsg;
         }
 
-        public JObject Update(JObject data)
+        public JObject Update(string p_trx_no, string p_trx_promo_code)
         {
             var returnMsg = new JObject();
+
+            var data = new JObject();
+            data["p_trx_no"] = p_trx_no;
+            data["p_trx_promo_code"] = p_trx_promo_code;
             bool update = this._transactionRepository.Update(data, out string message);
 
             if (update)

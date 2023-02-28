@@ -60,9 +60,10 @@ namespace testt.Controllers
         }
 
         [HttpPost]
-        public JsonResult Insert([FromBody] JObject data)
+        public JsonResult Insert([FromForm] string p_prm_code, [FromForm] string p_prm_name, [FromForm] string p_prm_description,
+            [FromForm] string p_prm_start, [FromForm] string p_prm_end, [FromForm] int p_prm_percentage, [FromForm] string p_added_by, [FromForm] string p_updated_by)
         {
-            var returnMsg = this._promoManager.Insert(data);
+            var returnMsg = this._promoManager.Insert(p_prm_code, p_prm_name, p_prm_description, p_prm_start, p_prm_end, p_prm_percentage, p_added_by, p_updated_by);
             var jsonResult = new JsonResult(returnMsg);
             jsonResult.StatusCode = Convert.ToInt32(returnMsg["status"]);
 
@@ -70,9 +71,9 @@ namespace testt.Controllers
         }
 
         [HttpPut("{id}")]
-        public JsonResult Update([FromBody] JObject data, int id)
+        public JsonResult Update([FromForm] string p_prm_code, [FromForm] string p_prm_name, [FromForm] string p_prm_description, int id)
         {
-            var returnMsg = this._promoManager.Update(data, id);
+            var returnMsg = this._promoManager.Update(p_prm_code, p_prm_name, p_prm_description, id);
             var jsonResult = new JsonResult(returnMsg);
             jsonResult.StatusCode = Convert.ToInt32(returnMsg["status"]);
 
