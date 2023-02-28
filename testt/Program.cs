@@ -1,5 +1,10 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +16,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddAuthentication()
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultScheme = "MultiAuthSchemes";
+        options.DefaultChallengeScheme = "MultiAuthSchemes";
+    })
     .AddCookie(options =>
     {
         options.LoginPath = "/auth/unauthorized";
@@ -40,7 +49,42 @@ builder.Services.AddAuthentication()
             ValidAudience = "https://localhost:7208/",
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@2"))
         };
-    });
+    })
+    .AddPolicyScheme("MultiAuthSchemes", JwtBearerDefaults.AuthenticationScheme, options =>
+     {
+         options.ForwardDefaultSelector = context =>
+         {
+             string authorization = context.Request.Headers[HeaderNames.Authorization];
+             if (!string.IsNullOrEmpty(authorization) && authorization.StartsWith("Bearer "))
+             {
+                 var token = authorization.Substring("Bearer ".Length).Trim();
+                 var jwtHandler = new JwtSecurityTokenHandler();
+                 return (jwtHandler.CanReadToken(token) && jwtHandler.ReadJwtToken(token).Issuer.Equals("https://localhost:7208/"))
+                     ? JwtBearerDefaults.AuthenticationScheme : "SecondJwtScheme";
+             }
+             return CookieAuthenticationDefaults.AuthenticationScheme;
+         };
+     });
+
+builder.Services.AddAuthorization(options =>
+{
+    /*var defaultAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder(
+        JwtBearerDefaults.AuthenticationScheme,
+        CookieAuthenticationDefaults.AuthenticationScheme,
+        "SecondJwtScheme");
+    defaultAuthorizationPolicyBuilder =
+        defaultAuthorizationPolicyBuilder.RequireAuthenticatedUser();
+    options.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();*/
+
+    var onlySecondJwtSchemePolicyBuilder = new AuthorizationPolicyBuilder("SecondJwtScheme");
+    options.AddPolicy("OnlySecondJwtScheme", onlySecondJwtSchemePolicyBuilder
+        .RequireAuthenticatedUser()
+        .Build());
+    var onlyCookieSchemePolicyBuilder = new AuthorizationPolicyBuilder(CookieAuthenticationDefaults.AuthenticationScheme);
+    options.AddPolicy("OnlyCookieScheme", onlyCookieSchemePolicyBuilder
+        .RequireAuthenticatedUser()
+        .Build());
+});
 
 var app = builder.Build();
 
