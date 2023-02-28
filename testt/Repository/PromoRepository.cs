@@ -1,21 +1,15 @@
 ﻿using CsvHelper;
-using Microsoft.Extensions.Configuration;
-using Microsoft.OpenApi.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Npgsql;
 using System.Data;
 using System.Globalization;
+using System.IO;
 using testt.Config;
 using testt.Models;
 
 namespace testt.DBProcesses
 {
-    public class Foo
-    {
-        public List<Promo> data { get; set; }
-    }
-
     public class PromoRepository
     {
         private readonly string constr = DbSingleton.Configuration.GetConnectionString("SampleDbConnection");
@@ -50,13 +44,18 @@ namespace testt.DBProcesses
         public bool WriteToCsvFile(out string message)
         {
             var promos = this.Index();
+            string filePath = "C:\\Users\\micha\\Documents\\Test\\testt.csv";
 
             message = "CSV File Updated!";
             bool returnValue = true;
             try
             {
                 var records = JsonConvert.DeserializeObject<List<Promo>>(promos.ToString());
-                using (var writer = new StreamWriter("C:\\Users\\micha\\Documents\\test.csv"))
+                if (!File.Exists(filePath)){
+                    FileStream fs = File.Create(filePath);
+                    fs.Close();
+                }
+                using (var writer = new StreamWriter(filePath))
                 {
                     using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
                     {
@@ -79,11 +78,11 @@ namespace testt.DBProcesses
             return returnValue;
         }
 
-        public bool ReadFromCsvFile(out string message)
+        public bool ReadFromCsvFile(string filePath, out string message)
         {
             var promos = new JArray();
 
-            using (var reader = new StreamReader("C:\\Users\\micha\\Documents\\test.csv"))
+            using (var reader = new StreamReader(filePath))
             {
                 using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
                 {
@@ -96,7 +95,6 @@ namespace testt.DBProcesses
                 }
             }
 
-            message = "txt file successfully created/updated";
             string path = "C:\\Users\\micha\\Documents\\" + DateTime.Now.ToString("yyyy") + "\\" + DateTime.Now.ToString("yyyyMM");
 
             try
@@ -108,6 +106,7 @@ namespace testt.DBProcesses
             } catch(Exception ex)
             {
                 message = ex.Message;
+                return false;
             }
 
             path += "\\log.txt";
@@ -120,6 +119,8 @@ namespace testt.DBProcesses
                     writer.WriteLine(promo.ToString());
                 }
             }
+
+            message = "txt file successfully created/updated";
 
             return true;
         }

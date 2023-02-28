@@ -46,10 +46,10 @@ namespace testt.Managers
             return returnMsg;
         }
 
-        public JObject ReadFromCsvFile()
+        public JObject ReadFromCsvFile(string filePath)
         {
             var returnMsg = new JObject();
-            bool read = this._promoRepository.ReadFromCsvFile(out string message);
+            bool read = this._promoRepository.ReadFromCsvFile(filePath, out string message);
 
             if (read)
             {

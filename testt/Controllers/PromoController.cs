@@ -40,9 +40,9 @@ namespace testt.Controllers
         }
 
         [HttpGet("read_from_csv")]
-        public JsonResult ReadFromCsvFile()
+        public JsonResult ReadFromCsvFile([FromForm] string filePath)
         {
-            var returnMsg = this._promoManager.ReadFromCsvFile();
+            var returnMsg = this._promoManager.ReadFromCsvFile(filePath);
             var jsonResult = new JsonResult(returnMsg);
             jsonResult.StatusCode = Convert.ToInt32(returnMsg["status"]);
 
