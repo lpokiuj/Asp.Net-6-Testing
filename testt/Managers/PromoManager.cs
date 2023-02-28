@@ -49,14 +49,22 @@ namespace testt.Managers
         public JObject ReadFromCsvFile()
         {
             var returnMsg = new JObject();
-            var promos = this._promoRepository.ReadFromCsvFile();
+            bool read = this._promoRepository.ReadFromCsvFile(out string message);
 
-            returnMsg["status"] = 200;
-            returnMsg["message"] = "Data retrieved successfully";
-            returnMsg["data"] = promos;
+            if (read)
+            {
+                returnMsg["status"] = 200;
+                returnMsg["message"] = message;
+                returnMsg["data"] = null;
+            }
+            else
+            {
+                returnMsg["status"] = 400;
+                returnMsg["message"] = message;
+                returnMsg["data"] = null;
+            }
 
             return returnMsg;
-
         }
 
         public JObject FindById(int id)

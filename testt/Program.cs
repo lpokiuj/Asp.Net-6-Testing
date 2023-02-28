@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
@@ -85,6 +86,18 @@ builder.Services.AddAuthorization(options =>
         .RequireAuthenticatedUser()
         .Build());
 });
+
+var loggerFactory = LoggerFactory.Create(
+            builder => builder
+                        // add console as logging target
+                        .AddConsole()
+                        // add debug output as logging target
+                        .AddDebug()
+                        // set minimum level to log
+                        .SetMinimumLevel(LogLevel.Debug)
+);
+
+var logger = loggerFactory.CreateLogger<Program>();
 
 var app = builder.Build();
 

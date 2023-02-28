@@ -79,7 +79,7 @@ namespace testt.DBProcesses
             return returnValue;
         }
 
-        public JArray ReadFromCsvFile()
+        public bool ReadFromCsvFile(out string message)
         {
             var promos = new JArray();
 
@@ -96,7 +96,32 @@ namespace testt.DBProcesses
                 }
             }
 
-            return promos;
+            message = "txt file successfully created/updated";
+            string path = "C:\\Users\\micha\\Documents\\" + DateTime.Now.ToString("yyyy") + "\\" + DateTime.Now.ToString("yyyyMM");
+
+            try
+            {
+                if (!Directory.Exists(path))
+                {
+                    DirectoryInfo di = Directory.CreateDirectory(path);
+                }
+            } catch(Exception ex)
+            {
+                message = ex.Message;
+            }
+
+            path += "\\log.txt";
+            FileStream fs = File.Create(path);
+            fs.Close();
+            using (StreamWriter writer = File.CreateText(path))
+            {
+                foreach(var promo in promos)
+                {
+                    writer.WriteLine(promo.ToString());
+                }
+            }
+
+            return true;
         }
 
         public JObject FindById(int id)
