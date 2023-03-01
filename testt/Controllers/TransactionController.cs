@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using System.Transactions;
 
@@ -15,6 +16,7 @@ namespace testt.Controllers
             this._transactionManager = new Managers.TransactionManager();
         }
 
+        [Authorize]
         [HttpGet("find_by_trx_no")]
         public JsonResult FindByTrxNo(string trx_no) 
         {
@@ -25,6 +27,7 @@ namespace testt.Controllers
             return jsonResult;
         }
 
+        [Authorize]
         [HttpGet("find_by_date")]
         public JsonResult FindByDate(string date1, string date2) 
         { 
@@ -35,6 +38,7 @@ namespace testt.Controllers
             return jsonResult;
         }
 
+        [Authorize]
         [HttpPost]
         public JsonResult Insert([FromForm] string p_trx_no, [FromForm] string p_trx_product_name,
             [FromForm] string p_trx_promo_code, [FromForm] int p_trx_amount)
@@ -46,6 +50,7 @@ namespace testt.Controllers
             return jsonResult;
         }
 
+        [Authorize]
         [HttpPut]
         public JsonResult Update([FromForm] string p_trx_no, [FromForm] string p_trx_promo_code)
         {

@@ -5,6 +5,7 @@ using System.Text.Json.Nodes;
 using System.Data;
 using Newtonsoft.Json.Linq;
 using testt.Managers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace testt.Controllers
 {
@@ -18,6 +19,8 @@ namespace testt.Controllers
         {
             this._promoManager = new PromoManager();
         }
+
+        [Authorize]
         [HttpGet]
         public JsonResult Index()
         {
@@ -28,7 +31,7 @@ namespace testt.Controllers
             return jsonResult;
         }
 
-
+        [Authorize]
         [HttpGet("write_to_csv")]
         public JsonResult WriteToCsvFile()
         {
@@ -39,6 +42,7 @@ namespace testt.Controllers
             return jsonResult;
         }
 
+        [Authorize]
         [HttpGet("read_from_csv")]
         public JsonResult ReadFromCsvFile([FromForm] string filePath)
         {
@@ -49,6 +53,7 @@ namespace testt.Controllers
             return jsonResult;
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public JsonResult FindById(int id)
         {
@@ -59,6 +64,7 @@ namespace testt.Controllers
             return jsonResult;
         }
 
+        [Authorize]
         [HttpPost]
         public JsonResult Insert([FromForm] string p_prm_code, [FromForm] string p_prm_name, [FromForm] string p_prm_description,
             [FromForm] string p_prm_start, [FromForm] string p_prm_end, [FromForm] int p_prm_percentage, [FromForm] string p_added_by, [FromForm] string p_updated_by)
@@ -70,6 +76,7 @@ namespace testt.Controllers
             return jsonResult;
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public JsonResult Update([FromForm] string p_prm_code, [FromForm] string p_prm_name, [FromForm] string p_prm_description, int id)
         {
@@ -81,6 +88,7 @@ namespace testt.Controllers
 
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public JsonResult Delete(int id)
         {
