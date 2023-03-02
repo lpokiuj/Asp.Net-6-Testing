@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using testt.DBProcesses;
 using testt.Repository;
 
@@ -28,7 +27,8 @@ namespace testt.Managers
             returnMsg["data"] = promos;
 
             // Logging
-            this._loggingRepository.Insert("get_all_promo", null, returnMsg, returnMsg["status"].Value<int>(), requestTime, responseTime);
+            returnMsg["requestTime"] = requestTime;
+            returnMsg["responseTime"] = responseTime;
 
             return returnMsg;
         }
@@ -55,7 +55,8 @@ namespace testt.Managers
             }
 
             // Logging
-            this._loggingRepository.Insert("write_promo_to_csv_file", null, returnMsg, returnMsg["status"].Value<int>(), requestTime, responseTime);
+            returnMsg["requestTime"] = requestTime;
+            returnMsg["responseTime"] = responseTime;
 
             return returnMsg;
         }
@@ -82,7 +83,8 @@ namespace testt.Managers
             }
 
             // Logging
-            this._loggingRepository.Insert("read_promo_from_csv_file", new JObject{ "filepath", filePath }, returnMsg, returnMsg["status"].Value<int>(), requestTime, responseTime);
+            returnMsg["requestTime"] = requestTime;
+            returnMsg["responseTime"] = responseTime;
 
             return returnMsg;
         }
@@ -109,25 +111,15 @@ namespace testt.Managers
             }
 
             // Logging
-            this._loggingRepository.Insert("find_promo_by_id", null, returnMsg, returnMsg["status"].Value<int>(), requestTime, responseTime);
+            returnMsg["requestTime"] = requestTime;
+            returnMsg["responseTime"] = responseTime;
 
             return returnMsg;
         }
 
-        public JObject Insert(string p_prm_code, string p_prm_name, string p_prm_description,
-            string p_prm_start, string p_prm_end, int p_prm_percentage, string p_added_by, string p_updated_by)
+        public JObject Insert(JObject data)
         {
             var returnMsg = new JObject();
-
-            var data = new JObject();
-            data["p_prm_code"] = p_prm_code;
-            data["p_prm_name"] = p_prm_name;
-            data["p_prm_description"] = p_prm_description;
-            data["p_prm_start"] = p_prm_start;
-            data["p_prm_end"] = p_prm_end;
-            data["p_prm_percentage"] = p_prm_percentage;
-            data["p_added_by"] = p_added_by;
-            data["p_updated_by"] = p_updated_by;
 
             DateTime requestTime = DateTime.Now;
             bool insert = this._promoRepository.Insert(data);
@@ -147,19 +139,15 @@ namespace testt.Managers
             }
 
             // Logging
-            this._loggingRepository.Insert("insert_promo", data, returnMsg, returnMsg["status"].Value<int>(), requestTime, responseTime);
-
+            returnMsg["requestTime"] = requestTime;
+            returnMsg["responseTime"] = responseTime;
+            
             return returnMsg;
         }
 
-        public JObject Update(string p_prm_code, string p_prm_name, string p_prm_description, int id)
+        public JObject Update(JObject data, int id)
         {
             var returnMsg = new JObject();
-
-            var data = new JObject();
-            data["p_prm_code"] = p_prm_code;
-            data["p_prm_name"] = p_prm_name;
-            data["p_prm_description"] = p_prm_description;
 
             DateTime requestTime = DateTime.Now;
             bool insert = this._promoRepository.Update(data, id);
@@ -179,8 +167,8 @@ namespace testt.Managers
             }
 
             // Logging
-            data["id"] = id;
-            this._loggingRepository.Insert("update_promo", data, returnMsg, returnMsg["status"].Value<int>(), requestTime, responseTime);
+            returnMsg["requestTime"] = requestTime;
+            returnMsg["responseTime"] = responseTime;
 
             return returnMsg;
         }
@@ -207,7 +195,8 @@ namespace testt.Managers
             }
 
             // Logging
-            this._loggingRepository.Insert("delete_promo", new JObject { "id", id }, returnMsg, returnMsg["status"].Value<int>(), requestTime, responseTime);
+            returnMsg["requestTime"] = requestTime;
+            returnMsg["responseTime"] = responseTime;
 
             return returnMsg;
         }

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using testt.Repository;
 
 namespace testt.Managers
@@ -7,7 +6,6 @@ namespace testt.Managers
     public class TransactionManager
     {
         private readonly TransactionRepository _transactionRepository;
-        private readonly LoggingRepository _loggingRepository;
         public TransactionManager()
         {
             _transactionRepository = new TransactionRepository();
@@ -27,7 +25,8 @@ namespace testt.Managers
             returnMsg["data"] = transaction;
 
             // Logging
-            this._loggingRepository.Insert("get_transaction_by_trx_no", new JObject { "trx_no", trx_no }, returnMsg, returnMsg["status"].Value<int>(), requestTime, responseTime);
+            returnMsg["requestTime"] = requestTime;
+            returnMsg["responseTime"] = responseTime;
 
             return returnMsg;
         }
@@ -45,21 +44,15 @@ namespace testt.Managers
             returnMsg["data"] = transactions;
 
             // Logging
-            this._loggingRepository.Insert("get_transaction_by_date", new JObject { { "date1", date1 }, { "date2", date2 } }, returnMsg, returnMsg["status"].Value<int>(), requestTime, responseTime);
+            returnMsg["requestTime"] = requestTime;
+            returnMsg["responseTime"] = responseTime;
 
             return returnMsg;
         }
 
-        public JObject Insert(string p_trx_no, string p_trx_product_name,
-            string p_trx_promo_code, int p_trx_amount)
+        public JObject Insert(JObject data)
         {
             var returnMsg = new JObject();
-
-            var data = new JObject();
-            data["p_trx_no"] = p_trx_no;
-            data["p_trx_product_name"] = p_trx_product_name;
-            data["p_trx_promo_code"] = p_trx_promo_code;
-            data["p_trx_amount"] = p_trx_amount;
 
             DateTime requestTime = DateTime.Now;
             bool insert = this._transactionRepository.Insert(data, out string message);
@@ -70,38 +63,46 @@ namespace testt.Managers
             returnMsg["data"] = null;
 
             // Logging
-            this._loggingRepository.Insert("insert_transaction", data, returnMsg, returnMsg["status"].Value<int>(), requestTime, responseTime);
+            returnMsg["requestTime"] = requestTime;
+            returnMsg["responseTime"] = responseTime;
 
             return returnMsg;
         }
 
-        public JObject Update(string p_trx_no, string p_trx_promo_code)
+        public JObject Update(JObject data)
         {
             var returnMsg = new JObject();
-
-            var data = new JObject();
-            data["p_trx_no"] = p_trx_no;
-            data["p_trx_promo_code"] = p_trx_promo_code;
-
             DateTime requestTime = DateTime.Now;
-            bool update = this._transactionRepository.Update(data, out string message);
             DateTime responseTime = DateTime.Now;
+            try
+            {
+                requestTime = DateTime.Now;
+                bool update = this._transactionRepository.Update(data, out string message);
+                responseTime = DateTime.Now;
 
-            if (update)
+                if (update)
+                {
+                    returnMsg["status"] = 200;
+                    returnMsg["message"] = message;
+                    returnMsg["data"] = null;
+                }
+                else
+                {
+                    returnMsg["status"] = 400;
+                    returnMsg["message"] = message;
+                    returnMsg["data"] = null;
+                }
+            } catch(Exception ex)
             {
-                returnMsg["status"] = 200;
-                returnMsg["message"] = message;
+                returnMsg["status"] = 500;
+                returnMsg["message"] = "Transaction Exception";
                 returnMsg["data"] = null;
-            }
-            else
-            {
-                returnMsg["status"] = 400;
-                returnMsg["message"] = message;
-                returnMsg["data"] = null;
+                returnMsg["error"] = ex.Message;
             }
 
             // Logging
-            this._loggingRepository.Insert("update_transaction", data, returnMsg, returnMsg["status"].Value<int>(), requestTime, responseTime);
+            returnMsg["requestTime"] = requestTime;
+            returnMsg["responseTime"] = responseTime;
 
             return returnMsg;
         }

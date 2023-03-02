@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using testt.Models;
-using Npgsql;
-using System.Text.Json.Nodes;
-using System.Data;
 using Newtonsoft.Json.Linq;
 using testt.Managers;
 using Microsoft.AspNetCore.Authorization;
+using testt.Repository;
+using testt.Common;
 
 namespace testt.Controllers
 {
@@ -14,19 +12,26 @@ namespace testt.Controllers
     public class PromoController : Controller
     {
         private readonly PromoManager _promoManager;
+        private readonly LoggingRepository _loggingRepository;
+        private readonly CommonFunction _commonFunction;
 
         public PromoController()
         {
             this._promoManager = new PromoManager();
+            this._loggingRepository = new LoggingRepository();
+            this._commonFunction = CommonFunction.GetInstance();
         }
 
         [Authorize]
-        [HttpGet]
+        [HttpGet("getAllPromos")]
         public JsonResult Index()
         {
             var returnMsg = this._promoManager.Index();
             var jsonResult = new JsonResult(returnMsg);
             jsonResult.StatusCode = Convert.ToInt32(returnMsg["status"]);
+
+            // Logging
+            this._loggingRepository.Insert(Request.Path, null, returnMsg, returnMsg["status"].Value<int>(), returnMsg["requestTime"].Value<DateTime>(), returnMsg["responseTime"].Value<DateTime>());
 
             return jsonResult;
         }
@@ -39,6 +44,9 @@ namespace testt.Controllers
             var jsonResult = new JsonResult(returnMsg);
             jsonResult.StatusCode = Convert.ToInt32(returnMsg["status"]);
 
+            // Logging
+            this._loggingRepository.Insert(Request.Path, null, returnMsg, returnMsg["status"].Value<int>(), returnMsg["requestTime"].Value<DateTime>(), returnMsg["responseTime"].Value<DateTime>());
+
             return jsonResult;
         }
 
@@ -50,51 +58,75 @@ namespace testt.Controllers
             var jsonResult = new JsonResult(returnMsg);
             jsonResult.StatusCode = Convert.ToInt32(returnMsg["status"]);
 
+
+
+            // Logging
+            var request = new JObject();
+            request["filePath"] = filePath;
+            this._loggingRepository.Insert(Request.Path, request, returnMsg, returnMsg["status"].Value<int>(), returnMsg["requestTime"].Value<DateTime>(), returnMsg["responseTime"].Value<DateTime>());
+
             return jsonResult;
         }
 
         [Authorize]
-        [HttpGet("{id}")]
+        [HttpGet("findById/{id}")]
         public JsonResult FindById(int id)
         {
             var returnMsg = this._promoManager.FindById(id);
             var jsonResult = new JsonResult(returnMsg);
             jsonResult.StatusCode = Convert.ToInt32(returnMsg["status"]);
 
+            // Logging
+            var request = new JObject();
+            request["id"] = id;
+            this._loggingRepository.Insert(Request.Path, request, returnMsg, returnMsg["status"].Value<int>(), returnMsg["requestTime"].Value<DateTime>(), returnMsg["responseTime"].Value<DateTime>());
+
             return jsonResult;
         }
 
         [Authorize]
-        [HttpPost]
-        public JsonResult Insert([FromForm] string p_prm_code, [FromForm] string p_prm_name, [FromForm] string p_prm_description,
-            [FromForm] string p_prm_start, [FromForm] string p_prm_end, [FromForm] int p_prm_percentage, [FromForm] string p_added_by, [FromForm] string p_updated_by)
+        [HttpPost("insertPromo")]
+        public JsonResult Insert()
         {
-            var returnMsg = this._promoManager.Insert(p_prm_code, p_prm_name, p_prm_description, p_prm_start, p_prm_end, p_prm_percentage, p_added_by, p_updated_by);
+            var requestJObject = this._commonFunction.RequestToJObject(Request.Form);
+            var returnMsg = this._promoManager.Insert(requestJObject);
             var jsonResult = new JsonResult(returnMsg);
             jsonResult.StatusCode = Convert.ToInt32(returnMsg["status"]);
 
+            // Logging
+            this._loggingRepository.Insert(Request.Path, requestJObject, returnMsg, returnMsg["status"].Value<int>(), returnMsg["requestTime"].Value<DateTime>(), returnMsg["responseTime"].Value<DateTime>());
+
             return jsonResult;
         }
 
         [Authorize]
-        [HttpPut("{id}")]
-        public JsonResult Update([FromForm] string p_prm_code, [FromForm] string p_prm_name, [FromForm] string p_prm_description, int id)
+        [HttpPut("updatePromo/{id}")]
+        public JsonResult Update(int id)
         {
-            var returnMsg = this._promoManager.Update(p_prm_code, p_prm_name, p_prm_description, id);
+            var requestJObject = this._commonFunction.RequestToJObject(Request.Form);
+            var returnMsg = this._promoManager.Update(requestJObject, id);
             var jsonResult = new JsonResult(returnMsg);
             jsonResult.StatusCode = Convert.ToInt32(returnMsg["status"]);
 
-            return jsonResult;
+            // Logging
+            requestJObject["id"] = id;
+            this._loggingRepository.Insert(Request.Path, requestJObject, returnMsg, returnMsg["status"].Value<int>(), returnMsg["requestTime"].Value<DateTime>(), returnMsg["responseTime"].Value<DateTime>());
 
+            return jsonResult;
         }
 
         [Authorize]
-        [HttpDelete("{id}")]
+        [HttpDelete("deletePromo/{id}")]
         public JsonResult Delete(int id)
         {
             var returnMsg = this._promoManager.Delete(id);
             var jsonResult = new JsonResult(returnMsg);
             jsonResult.StatusCode = Convert.ToInt32(returnMsg["status"]);
+
+            // Logging
+            var request = new JObject();
+            request["id"] = id;
+            this._loggingRepository.Insert(Request.Path, request, returnMsg, returnMsg["status"].Value<int>(), returnMsg["requestTime"].Value<DateTime>(), returnMsg["responseTime"].Value<DateTime>());
 
             return jsonResult;
         }

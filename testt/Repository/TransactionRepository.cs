@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using Npgsql;
 using System.Data;
 using testt.Config;
