@@ -9,7 +9,6 @@ namespace testt.Managers
         public TransactionManager()
         {
             _transactionRepository = new TransactionRepository();
-            _loggingRepository = new LoggingRepository();
         }
 
         public JObject FindByTrxNo(string trx_no)
