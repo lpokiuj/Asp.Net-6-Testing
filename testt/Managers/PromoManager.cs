@@ -145,6 +145,20 @@ namespace testt.Managers
             return returnMsg;
         }
 
+/*
+ 
+new JObject {
+    {"key1, "jey2},
+    {key4, hdw2}
+
+        {
+            "": "",
+            "": ""
+        }   
+
+}
+ 
+ */
         public JObject Update(JObject data, int id)
         {
             var returnMsg = new JObject();
